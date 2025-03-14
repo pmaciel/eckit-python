@@ -19,7 +19,7 @@ set -euo pipefail
 rm -rf .venv
 uv venv --python python3.11 .venv
 source .venv/bin/activate
-uv pip install --upgrade setuptools build cython twine wheel
+uv pip install --upgrade setuptools build cython twine wheel pytest
 
 PUBLISH_TO=${PUBLISH_TO:-prod}
 if [ "$PUBLISH_TO" = "test" ] ; then
@@ -41,6 +41,9 @@ export ECKIT_INCLUDE_DIRS="$PRF/eckitlib/include"
 # build
 rm -rf build dist
 PYTHONPATH=/buildscripts python -m build --no-isolation --wheel .
+
+uv pip install ./dist/*whl
+pytest tests
 
 # upload
 if [ "$PUBLISH_TO" != "nowhere" ] ; then
